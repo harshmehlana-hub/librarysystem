@@ -59,6 +59,12 @@ def get_books():
     inorder(root, result)
     return {"books": result}
 
+@app.route("/reset")
+def reset():
+    global root
+    root = None
+    return "Library reset"
+
 # ---------------- RUN ----------------
 
 import os

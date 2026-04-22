@@ -1,5 +1,9 @@
 const BASE_URL = "https://librarysystem-ob89.onrender.com";
 
+window.onload = function () {
+    fetch(`${BASE_URL}/reset`);
+};
+
 function showToast(message) {
     const toast = document.getElementById("toast");
     toast.innerText = message;
