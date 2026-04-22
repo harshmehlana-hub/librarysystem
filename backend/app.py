@@ -52,10 +52,18 @@ def search_by_title(root, title):
     return search_by_title(root.right, title)
 
 def inorder(root, result):
-    if root:
-        inorder(root.left, result)
-        result.append({"id": root.id, "title": root.title})
-        inorder(root.right, result)
+    if root is None:
+        return
+
+    inorder(root.left, result)
+
+    result.append({
+        "id": root.id,
+        "title": root.title,
+        "issued": getattr(root, "issued", False) 
+    })
+
+    inorder(root.right, result)
 
 # ---------------- API ----------------
 
@@ -79,15 +87,11 @@ def search_book():
     return res.title if res else "Not found"
 
 @app.route("/books")
-def inorder(root, result):
-    if root:
-        inorder(root.left, result)
-        result.append({
-            "id": root.id,
-            "title": root.title,
-            "issued": root.issued   # ✅ include status
-        })
-        inorder(root.right, result)
+@app.route("/books")
+def get_books():
+    result = []
+    inorder(root, result)
+    return {"books": result}
 
 @app.route("/reset")
 def reset():
