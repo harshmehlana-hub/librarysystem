@@ -1,25 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Library BST</title>
+  <title>Library Management (BST)</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Add Book</h2>
-<input id="id" placeholder="Book ID">
-<input id="title" placeholder="Title">
-<button onclick="addBook()">Add</button>
+<div class="container">
+  <h1>📚 Library Management System</h1>
 
-<h2>Search Book</h2>
-<input id="searchId" placeholder="Book ID">
-<button onclick="searchBook()">Search</button>
+  <div class="card">
+    <h2>Add Book</h2>
+    <input id="id" placeholder="Book ID">
+    <input id="title" placeholder="Book Title">
+    <button onclick="addBook()">Add Book</button>
+  </div>
 
-<h2>All Books</h2>
-<button onclick="loadBooks()">Show Books</button>
+  <div class="card">
+    <h2>Search Book</h2>
+    <input id="searchId" placeholder="Enter Book ID">
+    <button onclick="searchBook()">Search</button>
+    <p id="result"></p>
+  </div>
 
-<ul id="bookList"></ul>
+  <div class="card">
+    <h2>All Books (Sorted)</h2>
+    <button onclick="loadBooks()">Load Books</button>
+    <ul id="bookList"></ul>
+  </div>
 
-<p id="result"></p>
+</div>
 
 <script src="script.js"></script>
 </body>

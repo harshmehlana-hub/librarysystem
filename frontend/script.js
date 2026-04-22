@@ -6,9 +6,11 @@ function addBook() {
 
     fetch(`${BASE_URL}/add?id=${id}&title=${title}`)
         .then(res => res.text())
-        .then(data => alert(data));
+        .then(data => {
+            alert(data);
+            loadBooks(); // auto refresh
+        });
 }
-
 function searchBook() {
     const id = document.getElementById("searchId").value;
 
