@@ -12,16 +12,23 @@ class Node:
         self.title = title
         self.left = None
         self.right = None
+        self.issued = False  
 
 root = None
 
 def insert(root, id, title):
     if not root:
         return Node(id, title)
+
+    # duplicate
+    if id == root.id:
+        return root  # do nothing if duplicate
+
     if id < root.id:
         root.left = insert(root.left, id, title)
     else:
         root.right = insert(root.right, id, title)
+
     return root
 
 def search(root, id):
@@ -30,6 +37,19 @@ def search(root, id):
     if id < root.id:
         return search(root.left, id)
     return search(root.right, id)
+
+def search_by_title(root, title):
+    if not root:
+        return None
+
+    if root.title.lower() == title.lower():
+        return root
+
+    left = search_by_title(root.left, title)
+    if left:
+        return left
+
+    return search_by_title(root.right, title)
 
 def inorder(root, result):
     if root:
@@ -44,6 +64,11 @@ def add_book():
     global root
     id = int(request.args.get("id"))
     title = request.args.get("title")
+
+    # check duplicate
+    if search(root, id):
+        return "Book ID already exists"
+
     root = insert(root, id, title)
     return "Book added"
 
@@ -54,16 +79,59 @@ def search_book():
     return res.title if res else "Not found"
 
 @app.route("/books")
-def get_books():
-    result = []
-    inorder(root, result)
-    return {"books": result}
+def inorder(root, result):
+    if root:
+        inorder(root.left, result)
+        result.append({
+            "id": root.id,
+            "title": root.title,
+            "issued": root.issued   # ✅ include status
+        })
+        inorder(root.right, result)
 
 @app.route("/reset")
 def reset():
     global root
     root = None
     return "Library reset"
+
+@app.route("/issue")
+def issue_book():
+    id = int(request.args.get("id"))
+    book = search(root, id)
+
+    if not book:
+        return "Book not found"
+    if book.issued:
+        return "Already issued"
+
+    book.issued = True
+    return "Book issued"
+
+@app.route("/return")
+def return_book():
+    id = int(request.args.get("id"))
+    book = search(root, id)
+
+    if not book:
+        return "Book not found"
+
+    if not book.issued:
+        return "Book already available"
+
+    book.issued = False
+    return "Book returned"
+
+@app.route("/searchByTitle")
+def search_title():
+    title = request.args.get("title")
+    book = search_by_title(root, title)
+
+    if book:
+        status = "Issued" if book.issued else "Available"
+        return f"{book.id} - {book.title} ({status})"
+    else:
+        return "Book not found"
 
 # ---------------- RUN ----------------
 

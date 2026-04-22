@@ -4,14 +4,49 @@ window.onload = function () {
     fetch(`${BASE_URL}/reset`);
 };
 
-function showToast(message) {
+function showToast(message, type = "success") {
     const toast = document.getElementById("toast");
     toast.innerText = message;
+
+    if (type === "error") {
+        toast.style.background = "#ff4d4d"; // red
+    } else {
+        toast.style.background = "#4CAF50"; // green
+    }
+
     toast.style.opacity = 1;
 
     setTimeout(() => {
         toast.style.opacity = 0;
-    }, 2000);
+    }, 2500);
+}
+
+function issueBook(id) {
+    fetch(`${BASE_URL}/issue?id=${id}`)
+        .then(res => res.text())
+        .then(data => {
+            showToast(data, data.includes("issued") ? "success" : "error");
+            loadBooks();
+        });
+}
+
+function returnBook(id) {
+    fetch(`${BASE_URL}/return?id=${id}`)
+        .then(res => res.text())
+        .then(data => {
+            showToast(data, data.includes("returned") ? "success" : "error");
+            loadBooks();
+        });
+}
+
+function searchByTitle() {
+    const title = document.getElementById("searchTitle").value;
+
+    fetch(`${BASE_URL}/searchByTitle?title=${title}`)
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById("result").innerText = data;
+        });
 }
 
 function addBook() {
@@ -21,8 +56,12 @@ function addBook() {
     fetch(`${BASE_URL}/add?id=${id}&title=${title}`)
         .then(res => res.text())
         .then(data => {
-            showToast(data);
-            loadBooks();
+            if (data.includes("already exists")) {
+                showToast(data, "error"); // ❌ error toast
+            } else {
+                showToast(data, "success"); // ✅ success toast
+                loadBooks();
+            }
         });
 }
 
@@ -44,9 +83,18 @@ function loadBooks() {
             list.innerHTML = "";
 
             data.books.forEach(book => {
-                const li = document.createElement("li");
-                li.innerText = `${book.id} - ${book.title}`;
-                list.appendChild(li);
-            });
+    const li = document.createElement("li");
+
+    const status = book.issued ? "❌ Issued" : "✅ Available";
+
+    li.innerHTML = `
+        ${book.id} - ${book.title} (${status})
+        <br>
+        <button onclick="issueBook(${book.id})">Issue</button>
+        <button onclick="returnBook(${book.id})">Return</button>
+    `;
+
+    list.appendChild(li);
         });
+   });
 }
