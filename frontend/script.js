@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:5000";
+const BASE_URL = "https://librarysystem-ob89.onrender.com";
 
 function addBook() {
     const id = document.getElementById("id").value;
